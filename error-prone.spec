@@ -1,6 +1,6 @@
 Name:		error-prone
 Version:	2.50.0
-Release:	2
+Release:	3
 Summary:	Error Prone annotation, check API, and core
 Group:		Development/Java
 License:	Apache-2.0
@@ -10,6 +10,8 @@ URL:		https://errorprone.info/
 # @BugPattern jar from release 1. check_api is retargeted at the unshaded
 # cooker dataflow and javacutil jars. The JDK 24 generator is used because
 # Types.SignatureGenerator is a non-static inner class on this JDK.
+# Release 3 follows guava 33.8.0-jre and java-diff-utils 4.18. The compile
+# classpath stays on the eisop 3.41.0 dataflow and javacutil jars.
 Source0:	https://github.com/google/error-prone/archive/refs/tags/v%{version}.tar.gz#/error-prone-%{version}.tar.gz
 
 BuildArch:	noarch
@@ -17,7 +19,7 @@ BuildRequires:	java-current-devel
 BuildRequires:	sysjar
 BuildRequires:	javapackages-filesystem
 BuildRequires:	protobuf-compiler
-BuildRequires:	mvn(com.google.guava:guava) = 33.6.0-jre
+BuildRequires:	mvn(com.google.guava:guava) = 33.8.0-jre
 BuildRequires:	mvn(com.google.guava:failureaccess) = 1.0.3
 BuildRequires:	mvn(com.google.errorprone:error_prone_annotations) = 2.50.0
 BuildRequires:	mvn(com.google.auto.value:auto-value) = 1.11.1
@@ -31,7 +33,7 @@ BuildRequires:	mvn(org.checkerframework:javacutil) = 3.41.0-eisop1
 BuildRequires:	mvn(org.checkerframework:checker-qual) = 3.41.0-eisop1
 BuildRequires:	mvn(org.plumelib:plume-util) = 1.8.1
 BuildRequires:	mvn(com.github.ben-manes.caffeine:caffeine) = 3.0.5
-BuildRequires:	mvn(io.github.java-diff-utils:java-diff-utils) = 4.12
+BuildRequires:	mvn(io.github.java-diff-utils:java-diff-utils) = 4.18
 BuildRequires:	mvn(com.github.kevinstern:software-and-algorithms) = 1.0
 BuildRequires:	mvn(com.google.googlejavaformat:google-java-format) = 1.35.0
 BuildRequires:	mvn(org.pcollections:pcollections) = 4.0.1
@@ -40,7 +42,7 @@ BuildRequires:	mvn(com.google.protobuf:protobuf-java) = 4.33.2
 BuildRequires:	mvn(javax.inject:javax.inject) = 1.0.5
 BuildRequires:	mvn(org.jspecify:jspecify) = 1.0.0
 Requires:	mvn(com.google.errorprone:error_prone_annotations) = 2.50.0
-Requires:	mvn(com.google.guava:guava) = 33.6.0-jre
+Requires:	mvn(com.google.guava:guava) = 33.8.0-jre
 Requires:	mvn(org.checkerframework:dataflow) = 3.41.0-eisop1
 Requires:	mvn(org.checkerframework:javacutil) = 3.41.0-eisop1
 Requires:	mvn(com.github.ben-manes.caffeine:caffeine) = 3.0.5
@@ -108,7 +110,7 @@ cat > error_prone_annotation.pom << EOF
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.6.0-jre</version>
+      <version>33.8.0-jre</version>
     </dependency>
   </dependencies>
 </project>
@@ -117,7 +119,7 @@ EOF
 find check_api/src/main/java -name '*.java' > check.list
 test "$(wc -l < check.list)" -eq 154
 mkdir -p classes-api gen-api
-AP="$PWD/error_prone_annotation.jar:%{_javadir}/error_prone_annotations-2.50.0.jar:%{_javadir}/jspecify.jar:%{_javadir}/dataflow.jar:%{_javadir}/java-diff-utils.jar:%{_javadir}/auto-value-annotations.jar:%{_javadir}/auto-value.jar:%{_javadir}/auto-common.jar:%{_javadir}/software-and-algorithms.jar:%{_javadir}/caffeine.jar:%{_javadir}/atinject.jar:%{_javadir}/guava.jar:%{_javadir}/failureaccess.jar:%{_javadir}/checker-qual-3.41.0-eisop1.jar:%{_javadir}/javacutil.jar:%{_javadir}/plume-util.jar:%{_javadir}/javapoet.jar:%{_javadir}/incap.jar:%{_javadir}/escapevelocity.jar"
+AP="$PWD/error_prone_annotation.jar:%{_javadir}/error_prone_annotations-2.50.0.jar:%{_javadir}/jspecify.jar:%{_javadir}/dataflow-3.41.0.eisop1.jar:%{_javadir}/java-diff-utils.jar:%{_javadir}/auto-value-annotations.jar:%{_javadir}/auto-value.jar:%{_javadir}/auto-common.jar:%{_javadir}/software-and-algorithms.jar:%{_javadir}/caffeine.jar:%{_javadir}/atinject.jar:%{_javadir}/guava.jar:%{_javadir}/failureaccess.jar:%{_javadir}/checker-qual-3.41.0-eisop1.jar:%{_javadir}/javacutil-3.41.0.eisop1.jar:%{_javadir}/plume-util.jar:%{_javadir}/javapoet.jar:%{_javadir}/incap.jar:%{_javadir}/escapevelocity.jar"
 EXPORTS=(
 	--add-exports=java.base/jdk.internal.javac=ALL-UNNAMED
 	--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
@@ -179,7 +181,7 @@ cat > error_prone_check_api.pom << EOF
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.6.0-jre</version>
+      <version>33.8.0-jre</version>
     </dependency>
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
@@ -189,7 +191,7 @@ cat > error_prone_check_api.pom << EOF
     <dependency>
       <groupId>io.github.java-diff-utils</groupId>
       <artifactId>java-diff-utils</artifactId>
-      <version>4.12</version>
+      <version>4.18</version>
     </dependency>
     <dependency>
       <groupId>org.checkerframework</groupId>
@@ -278,7 +280,7 @@ cat > error_prone_core.pom << EOF
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.6.0-jre</version>
+      <version>33.8.0-jre</version>
     </dependency>
     <dependency>
       <groupId>com.google.auto.value</groupId>
@@ -397,7 +399,7 @@ public class Core {
 	}
 }
 EOF
-CCP="$CORE:$API:$ANN:%{_javadir}/error_prone_annotations-2.50.0.jar:%{_javadir}/guava.jar:%{_javadir}/failureaccess.jar:%{_javadir}/auto-value-annotations.jar:%{_javadir}/auto-common.jar:%{_javadir}/google-java-format.jar:%{_javadir}/pcollections.jar:%{_javadir}/atinject.jar:%{_javadir}/caffeine.jar:%{_javadir}/java-diff-utils.jar:%{_javadir}/dataflow.jar:%{_javadir}/software-and-algorithms.jar:%{_javadir}/javacutil.jar:%{_javadir}/checker-qual-3.41.0-eisop1.jar:%{_javadir}/plume-util.jar:%{_javadir}/protobuf-java.jar"
+CCP="$CORE:$API:$ANN:%{_javadir}/error_prone_annotations-2.50.0.jar:%{_javadir}/guava.jar:%{_javadir}/failureaccess.jar:%{_javadir}/auto-value-annotations.jar:%{_javadir}/auto-common.jar:%{_javadir}/google-java-format.jar:%{_javadir}/pcollections.jar:%{_javadir}/atinject.jar:%{_javadir}/caffeine.jar:%{_javadir}/java-diff-utils.jar:%{_javadir}/dataflow-3.41.0.eisop1.jar:%{_javadir}/software-and-algorithms.jar:%{_javadir}/javacutil-3.41.0.eisop1.jar:%{_javadir}/checker-qual-3.41.0-eisop1.jar:%{_javadir}/plume-util.jar:%{_javadir}/protobuf-java.jar"
 javac --release 21 -encoding UTF-8 -cp "$CCP" -d check check/Core.java
 java -cp "check:$CCP" Core > check/core.txt
 cat check/core.txt
